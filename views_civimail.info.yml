@@ -1,0 +1,7 @@
+name: 'Views CiviMail'
+type: module
+description: 'Views displays to be used in civimail as tokens.'
+core: 8.x
+package: 'CiviCRM'
+dependencies:
+  - views

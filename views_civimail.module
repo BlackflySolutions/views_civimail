@@ -1,0 +1,249 @@
+<?php
+
+/**
+ * @file
+ * Contains views_civimail.module.
+ *
+ * The views style plugin sets a theme of views_view_civimail.
+ *
+ * The module alters the suggestions for other templates when the style is in use.
+ * Those templates are defined in views_civimail_theme
+ *
+ * It also provides tokens to civicrm for views displays using this plugin.
+ */
+
+use Drupal\Core\Routing\RouteMatchInterface;
+
+/**
+ * Implements hook_help().
+ */
+function views_civimail_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    // Main module help for the views_civimail module.
+    case 'help.page.views_civimail':
+      $output = '';
+      $output .= '<h3>' . t('About') . '</h3>';
+      $output .= '<p>' . t('CiviMail views output display plugin') . '</p>';
+      return $output;
+
+    default:
+  }
+}
+
+/**
+ * Implements hook_theme().
+ *
+ * Theme implementations that strip out default drupal wrapping.
+ *
+ * views_container_civimail, used to alter the theme suggestions of the container.
+ * views_civimail, used to alter the theme suggestions of the view itself.
+ * views_view_civimail, used by the style plugin
+ */
+function views_civimail_theme() {
+  return [
+    'views_container_civimail' => [
+      'template' => 'views-container-civimail',
+      'base hook' => 'container',
+    ],
+    'views_civimail' => [
+      'template' => 'views-civimail',
+      'base hook' => 'views_view',
+    ],
+    'views_view_civimail' => [
+      'file' => 'views_civimail.theme.inc',
+      'template' => 'views-view-civimail',
+      'base hook' => 'views_view_civimail',
+    ],
+    'views_view_fields_civimail_sidearticle' => [
+      'template' => 'views-view-fields-civimail-sidearticle',
+      'base hook' => 'views_view_fields',
+    ],
+    'views_view_fields_civimail_singlearticle' => [
+      'template' => 'views-view-fields-civimail-singlearticle',
+      'base hook' => 'views_view_fields',
+    ],
+  ];
+}
+
+/**
+ * Implement hook_preprocess_views_view_fields
+ *
+ * If I'm working with a civimail style for my display,
+ * and I've chosen a mosaico block option
+ * then assign the selected fields to the specially named mosaico
+ * fields.
+ */
+function views_civimail_preprocess_views_view_fields(&$variables) {
+  /** @var \Drupal\views\ViewExecutable $view */
+  $view = $variables['view'];
+  if (_views_civimail_is_civimail_style($view)) {
+    $style = $view->style_plugin;
+    $options = $style->options;
+    $mosaico_block = $options['mosaico_block'];
+    if ($mosaico_block) {
+      foreach(['mosaico_title','mosaico_image','mosaico_longText','mosaico_link'] as $key) {
+        $value = $options[$key];
+        if ($value && !empty($variables['fields'][$value])) {
+          $variables['fields'][strtolower($key)] = $variables['fields'][$value];
+        }
+      }
+    }
+  }
+}
+
+/**
+ * Implements hook_theme_suggestions_HOOK_alter().
+ *
+ * Add views "view" template suggestion override when using the civimail style.
+ *
+ * @inheritdoc
+ */
+function views_civimail_theme_suggestions_views_view_alter(array &$suggestions, array $variables) {
+  if (_views_civimail_is_civimail_style($variables['view'])) {
+    $suggestions[] = 'views_civimail';
+  }
+}
+
+/**
+ * Implements hook_theme_suggestions_HOOK_alter().
+ *
+ * Add views "views_view_fields" template suggestion override when using the civimail style and a mosaico option.
+ *
+ * @inheritdoc
+ */
+function views_civimail_theme_suggestions_views_view_fields_alter(array &$suggestions, array &$variables) {
+  if (_views_civimail_is_civimail_style($variables['view'])) {
+    $style = $variables['view']->style_plugin;
+    $options = $style->options;
+    $mosaico_block = $options['mosaico_block'];
+    switch($mosaico_block) {
+      case 'sideArticleBlock':
+        $suggestions[] = 'views_view_fields_civimail_sidearticle';
+        break;
+      case 'singleArticleBlock':
+        $suggestions[] = 'views_view_fields_civimail_singlearticle';
+        break;
+    }
+  }
+}
+
+/**
+ * Implements hook_theme_suggestions_HOOK() for container templates.
+ *
+ * Add a suggestion for a view container when the display style is 'civimail'
+ */
+function views_civimail_theme_suggestions_container_alter(array &$suggestions, array $variables) {
+  $element = $variables['element'];
+  if (isset($element['#type']) && $element['#type'] == 'view') {
+    if (!empty($element['#view'])) {
+      if (_views_civimail_is_civimail_style($element['#view'])) {
+        $suggestions[] = 'views_container_civimail';
+      }
+    }
+  }
+}
+
+/*
+ * Get a list of views/displays using my civimail style
+ */
+function _views_civimail_displays() {
+  static $displays;
+  if (is_array($displays)) {
+    return $displays;
+  }
+  $displays = [];
+  // this should always be true, but let's avoid unexpected errors
+  if (method_exists('\Drupal\views\Views','getEnabledViews')) {
+    $views_list = \Drupal\views\Views::getEnabledViews();
+    foreach($views_list as $name => $view) {
+      foreach($view->get('display') as $display_name => $display) {
+        if ($display['display_options']['style']['type'] == 'civimail') {
+          $displays[$name.'__'.$display_name] = $view->get('label') . ', ' . $display['display_title'];
+        }
+      }
+    }
+  }
+  return $displays;
+}
+
+/*
+ * Test a view object with display for whether it uses my "Civimail" style
+ * @var \Drupal\views\ViewExecutable $view 
+ */
+function _views_civimail_is_civimail_style($view) {
+  if (!empty($view) && method_exists($view, 'getStyle')) {
+    $style_class = get_class($view->getStyle());
+    return ('Drupal\views_civimail\Plugin\views\style\Civimail' == $style_class) ? TRUE : FALSE;
+  }
+}
+
+
+/*
+ * Provide tokens for civicrm
+ */
+function views_civimail_civicrm_tokens(&$tokens) {
+  // get all my views/displays that are using the Civimail style
+  $displays = _views_civimail_displays();
+  $token_name = 'views';
+  $views_tokens = [];
+  foreach($displays as $name => $label) {
+    $views_tokens[$token_name.'.'.$name] = $label;
+  }
+  $tokens[$token_name] = $views_tokens;
+}
+
+function views_civimail_civicrm_tokenValues(&$values, $cids, $job_id = null, $tokens = array(), $context = null) {
+  if (!empty($tokens['views'])) {
+    // for security, only allow my "Civimail style" view/displays
+    $display_filter = _views_civimail_displays();
+    foreach(array_keys($tokens['views']) as $key) {
+      if (!empty($display_filter[$key])) {
+        list($view_name,$display) = explode('__', $key, 2);
+        $view_renderable = views_embed_view($view_name, $display);
+        $output = \Drupal::service('renderer')->renderPlain($view_renderable);
+        $output = trim($output);
+        // now convert src links to absolute links
+	// Fortunately, we can use a civicrm constant that we know points to the base url
+        $base_url = rtrim(CIVICRM_UF_BASEURL,"/");
+	// I'm not sure why this one is necessary, perhaps because it's running via cron
+        $output = str_replace('=":/usr/local/bin/','="'.$base_url.'/', $output);
+        $output = str_replace(' src="/',' src="'.$base_url.'/', $output);
+	$output = str_replace(' href="/',' href="'.$base_url.'/', $output);
+        // convert links to trackable links
+        $matched = preg_match_all('/ href="([^#].+?)"/', $output, $matches);
+        // CRM_Core_Error::debug('matched',$matched, 1, 1);
+        $trackable_urls = array();
+        if (!empty($job_id) && !empty($output) && $matched) {
+          // job details to get mailing_id
+          $job = civicrm_api3('MailingJob', 'getsingle', array('id' => $job_id));
+          // $result = $xml->xpath("//@href");
+          $list = array();
+          // while(list( , $url) = each($result)) {
+          foreach($matches[1] as $url) {
+            $list[$url] = 1;
+          }
+          $trackable_urls = array_keys($list);
+        }
+        else {
+          // watchdog('view values', "$view_name  $display_name $job_id ".$output);
+        }
+        foreach ($cids as $cid) {
+          if (count($trackable_urls)) {
+            // get event_queue_id
+            $queue = civicrm_api3('MailingEventQueue', 'getsingle', array('job_id' => $job_id, 'contact_id' => $cid));
+            $replace = array();
+            $search = array();
+            foreach($trackable_urls as $url) {
+              $search[] = '"'.$url.'"';
+              $replace[] = '"'.CRM_Mailing_BAO_TrackableURL::getTrackerURL($url, $job['mailing_id'], $queue['id']).'"';
+            }
+            $values[$cid]['views.'.$key] = str_replace($search,$replace,$output);
+          }
+          else {
+            $values[$cid]['views.'.$key] = $output;
+          }
+        }
+      }
+    }
+  }
+}
