@@ -194,6 +194,7 @@ function views_civimail_civicrm_tokens(&$tokens) {
 
 function views_civimail_civicrm_tokenValues(&$values, $cids, $job_id = null, $tokens = array(), $context = null) {
   if (!empty($tokens['views'])) {
+    \Drupal::getContainer()->get('module_handler')->loadAll();
     // for security, only allow my "Civimail style" view/displays
     $display_filter = _views_civimail_displays();
     foreach(array_keys($tokens['views']) as $key) {
@@ -203,12 +204,12 @@ function views_civimail_civicrm_tokenValues(&$values, $cids, $job_id = null, $to
         $output = \Drupal::service('renderer')->renderPlain($view_renderable);
         $output = trim($output);
         // now convert src links to absolute links
-	// Fortunately, we can use a civicrm constant that we know points to the base url
+        // Fortunately, we can use a civicrm constant that we know points to the base url
         $base_url = rtrim(CIVICRM_UF_BASEURL,"/");
-	// I'm not sure why this one is necessary, perhaps because it's running via cron
+        // I'm not sure why this one is necessary, perhaps because it's running via cron
         $output = str_replace('=":/usr/local/bin/','="'.$base_url.'/', $output);
         $output = str_replace(' src="/',' src="'.$base_url.'/', $output);
-	$output = str_replace(' href="/',' href="'.$base_url.'/', $output);
+        $output = str_replace(' href="/',' href="'.$base_url.'/', $output);
         // convert links to trackable links
         $matched = preg_match_all('/ href="([^#].+?)"/', $output, $matches);
         // CRM_Core_Error::debug('matched',$matched, 1, 1);
