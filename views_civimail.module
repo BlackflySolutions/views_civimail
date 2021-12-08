@@ -177,6 +177,99 @@ function _views_civimail_is_civimail_style($view) {
   }
 }
 
+/*
+ * Get the output to be used in civimail for a view display
+ * @var string $key
+ * Where key is {view name}__{display name}
+ * TODO: see if it's worth statically saving the output?
+ */
+function _views_civimail_view_output($key) {
+  list($view_name,$display) = explode('__', $key, 2);
+  $view_renderable = views_embed_view($view_name, $display);
+  $output = \Drupal::service('renderer')->renderPlain($view_renderable);
+  $output = trim($output);
+  // now convert src and href links to absolute links
+  // Fortunately, we can use a civicrm constant that we know points to the base url
+  $base_url = rtrim(CIVICRM_UF_BASEURL,"/");
+  // I'm not sure why this first one is necessary, perhaps because it's running via cron
+  $output = str_replace('=":/usr/local/bin/','="'.$base_url.'/', $output);
+  $output = str_replace(' src="/',' src="'.$base_url.'/', $output);
+  $output = str_replace(' href="/',' href="'.$base_url.'/', $output);
+  return $output;
+}
+
+function views_civimail_civicrm_container($container) {
+  $container->addResource(new \Symfony\Component\Config\Resource\FileResource(__FILE__));
+  $container->findDefinition('dispatcher')->addMethodCall('addListener',
+    ['civi.token.list', 'views_civimail_civicrm_register_tokens']
+  );
+  $container->findDefinition('dispatcher')->addMethodCall('addListener',
+    ['civi.token.eval', 'views_civimail_civicrm_evaluate_tokens']
+  );
+}
+
+function views_civimail_civicrm_register_tokens(\Civi\Token\Event\TokenRegisterEvent $e) {
+  $displays = _views_civimail_displays();
+  $e_views = $e->entity('views');
+  foreach($displays as $name => $label) {
+    $e_views->register($name,$label);
+  }
+}
+
+function views_civimail_civicrm_evaluate_tokens(\Civi\Token\Event\TokenValueEvent $e) {
+  $tokens = $e->getTokenProcessor()->getMessageTokens();
+  if (!empty($tokens['views'])) {
+    // ensure I've loaded all my Drupal modules (like views!)
+    \Drupal::getContainer()->get('module_handler')->loadAll();
+    $display_filter = _views_civimail_displays();
+    foreach($tokens['views'] as $key) {
+      if (!empty($display_filter[$key])) {
+        $output = _views_civimail_view_output($key);
+        // convert links to trackable links
+        $matched = preg_match_all('/ href="([^#].+?)"/', $output, $matches);
+        // CRM_Core_Error::debug('matched',$matched, 1, 1);
+        $trackable_urls = array();
+        // TODO: can job_id be fetched from some context value?
+        if (!empty($job_id) && !empty($output) && $matched) {
+          // job details to get mailing_id
+          $job = civicrm_api3('MailingJob', 'getsingle', array('id' => $job_id));
+          // $result = $xml->xpath("//@href");
+          $list = array();
+          // while(list( , $url) = each($result)) {
+          foreach($matches[1] as $url) {
+            $list[$url] = 1;
+          }
+          $trackable_urls = array_keys($list);
+        }
+        else {
+          // watchdog('view values', "$view_name  $display_name $job_id ".$output);
+        }
+        foreach ($e->getRows() as $row) {
+          /** @var TokenRow $row */
+          $row->format('text/html');
+          $row->tokens('views', $key, $output);
+        }
+        /*
+        foreach ($cids as $cid) {
+          if (count($trackable_urls)) {
+            // get event_queue_id
+            $queue = civicrm_api3('MailingEventQueue', 'getsingle', array('job_id' => $job_id, 'contact_id' => $cid));
+            $replace = array();
+            $search = array();
+            foreach($trackable_urls as $url) {
+              $search[] = '"'.$url.'"';
+              $replace[] = '"'.CRM_Mailing_BAO_TrackableURL::getTrackerURL($url, $job['mailing_id'], $queue['id']).'"';
+            }
+            $values[$cid]['views.'.$key] = str_replace($search,$replace,$output);
+          }
+          else {
+            $values[$cid]['views.'.$key] = $output;
+          }
+        } */
+      }
+    }
+  }
+}
 
 /*
  * Provide tokens for civicrm
@@ -199,17 +292,7 @@ function views_civimail_civicrm_tokenValues(&$values, $cids, $job_id = null, $to
     $display_filter = _views_civimail_displays();
     foreach(array_keys($tokens['views']) as $key) {
       if (!empty($display_filter[$key])) {
-        list($view_name,$display) = explode('__', $key, 2);
-        $view_renderable = views_embed_view($view_name, $display);
-        $output = \Drupal::service('renderer')->renderPlain($view_renderable);
-        $output = trim($output);
-        // now convert src links to absolute links
-        // Fortunately, we can use a civicrm constant that we know points to the base url
-        $base_url = rtrim(CIVICRM_UF_BASEURL,"/");
-        // I'm not sure why this one is necessary, perhaps because it's running via cron
-        $output = str_replace('=":/usr/local/bin/','="'.$base_url.'/', $output);
-        $output = str_replace(' src="/',' src="'.$base_url.'/', $output);
-        $output = str_replace(' href="/',' href="'.$base_url.'/', $output);
+        $output = _views_civimail_view_output($key);
         // convert links to trackable links
         $matched = preg_match_all('/ href="([^#].+?)"/', $output, $matches);
         // CRM_Core_Error::debug('matched',$matched, 1, 1);
