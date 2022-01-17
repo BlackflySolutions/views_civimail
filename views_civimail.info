@@ -1,0 +1,7 @@
+name = 'Views CiviMail'
+description = 'Views displays to be used in civimail as tokens.'
+core = 7.x
+package = CiviCRM
+dependencies[] = views
+files[] = views_civimail.module
+files[] = views/civimail.inc

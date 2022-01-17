@@ -1,7 +1,0 @@
-name: Views CiviMail
-type: module
-description: 'Views displays to be used in civimail as tokens.'
-core_version_requirement: ^8.8 || ^9
-package: CiviCRM
-dependencies:
-  - drupal:views
