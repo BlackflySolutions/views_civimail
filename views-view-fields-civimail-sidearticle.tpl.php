@@ -24,15 +24,6 @@
  * @ingroup views_templates
  */
 ?>
-<?php foreach ($fields as $id => $field): ?>
-  <?php if (!empty($field->separator)): ?>
-    <?php print $field->separator; ?>
-  <?php endif; ?>
-
-    <?php print $field->label_html; ?>
-    <?php print $field->content; ?>
-<?php endforeach; ?>
-
   <!-- sideArticleBlock, stripped  -->
         <table width="534" border="0" cellpadding="0" cellspacing="0" class="vb-row" bgcolor="#ffffff" 
           style="border-collapse: collapse; width: 100%; max-width: 534px; background-color: #ffffff; -ko-attr-bgcolor: @backgroundColor; -ko-background-color: @backgroundColor;">
