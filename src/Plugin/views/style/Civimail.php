@@ -53,7 +53,11 @@ class Civimail extends DefaultStyle {
     return $options;
   }
 
-  protected $mosaico_blocks = ['' => 'None', 'sideArticleBlock' => 'Side Article Block','singleArticleBlock' => 'Single Article Block'];
+  protected $mosaico_blocks = ['' => 'None', 
+	  'sideArticleBlock' => 'Side Article Block',
+	  'singleArticleBlock' => 'Single Article Block',
+	  'singleBlogBlock' => 'Single Blog Block'
+  ];
   protected $mosaico_fields = ['image' => 'Image', 'title' => 'Title', 'longText' => 'Body', 'link' => 'Link'];
 
   /**

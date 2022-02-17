@@ -62,6 +62,10 @@ function views_civimail_theme() {
       'template' => 'views-view-fields-civimail-singlearticle',
       'base hook' => 'views_view_fields',
     ],
+    'views_view_fields_civimail_blog' => [
+      'template' => 'views-view-fields-civimail-blog',
+      'base hook' => 'views_view_fields',
+    ],
   ];
 }
 
@@ -122,6 +126,9 @@ function views_civimail_theme_suggestions_views_view_fields_alter(array &$sugges
         break;
       case 'singleArticleBlock':
         $suggestions[] = 'views_view_fields_civimail_singlearticle';
+        break;
+      case 'singleBlogBlock':
+        $suggestions[] = 'views_view_fields_civimail_blog';
         break;
     }
   }
@@ -198,17 +205,24 @@ function _views_civimail_view_output($key) {
   return $output;
 }
 
+function views_civimail_civicrm_config(&$config) {
+//  \CRM_Core_Error::debug_log_message('in hook config as drupal user ' . \Drupal::currentUser()->id() . ' and civi user ' . \CRM_Core_Session::getLoggedInContactID());
+  \Civi::dispatcher()->addListener('civi.token.list', 'views_civimail_civicrm_register_tokens');
+  \Civi::dispatcher()->addListener('civi.token.eval', 'views_civimail_civicrm_evaluate_tokens');
+}
+
 function views_civimail_civicrm_container($container) {
   $container->addResource(new \Symfony\Component\Config\Resource\FileResource(__FILE__));
-  $container->findDefinition('dispatcher')->addMethodCall('addListener',
-    ['civi.token.list', 'views_civimail_civicrm_register_tokens']
-  );
-  $container->findDefinition('dispatcher')->addMethodCall('addListener',
-    ['civi.token.eval', 'views_civimail_civicrm_evaluate_tokens']
-  );
+//  $container->findDefinition('dispatcher')->addMethodCall('addListener',
+//    ['civi.token.list', 'views_civimail_civicrm_register_tokens']
+//  );
+//  $container->findDefinition('dispatcher')->addMethodCall('addListener',
+//    ['civi.token.eval', 'views_civimail_civicrm_evaluate_tokens']
+//  );
 }
 
 function views_civimail_civicrm_register_tokens(\Civi\Token\Event\TokenRegisterEvent $e) {
+//  \CRM_Core_Error::debug_log_message('in register tokens');
   $displays = _views_civimail_displays();
   $e_views = $e->entity('views');
   foreach($displays as $name => $label) {
@@ -217,6 +231,7 @@ function views_civimail_civicrm_register_tokens(\Civi\Token\Event\TokenRegisterE
 }
 
 function views_civimail_civicrm_evaluate_tokens(\Civi\Token\Event\TokenValueEvent $e) {
+//  \CRM_Core_Error::debug_log_message('in evaluate tokens');
   $tokens = $e->getTokenProcessor()->getMessageTokens();
   if (!empty($tokens['views'])) {
     // ensure I've loaded all my Drupal modules (like views!)
