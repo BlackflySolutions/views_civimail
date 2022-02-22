@@ -164,7 +164,7 @@ function _views_civimail_displays() {
     $views_list = \Drupal\views\Views::getEnabledViews();
     foreach($views_list as $name => $view) {
       foreach($view->get('display') as $display_name => $display) {
-        if ($display['display_options']['style']['type'] == 'civimail') {
+        if (($display['display_options']['style']['type'] ?? '') == 'civimail') {
           $displays[$name.'__'.$display_name] = $view->get('label') . ', ' . $display['display_title'];
         }
       }
