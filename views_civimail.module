@@ -164,7 +164,7 @@ function _views_civimail_displays() {
     $views_list = \Drupal\views\Views::getEnabledViews();
     foreach($views_list as $name => $view) {
       foreach($view->get('display') as $display_name => $display) {
-        if ($display['display_options']['style']['type'] == 'civimail') {
+        if (($display['display_options']['style']['type'] ?? '') == 'civimail') {
           $displays[$name.'__'.$display_name] = $view->get('label') . ', ' . $display['display_title'];
         }
       }
@@ -199,7 +199,7 @@ function _views_civimail_view_output($key) {
   // Fortunately, we can use a civicrm constant that we know points to the base url
   $base_url = rtrim(CIVICRM_UF_BASEURL,"/");
   // I'm not sure why this first one is necessary, perhaps because it's running via cron
-  $output = str_replace('=":/usr/local/bin/','="'.$base_url.'/', $output);
+  $output = str_replace('="http://:/usr/local/bin/','="'.$base_url.'/', $output);
   $output = str_replace(' src="/',' src="'.$base_url.'/', $output);
   $output = str_replace(' href="/',' href="'.$base_url.'/', $output);
   return $output;
