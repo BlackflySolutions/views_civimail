@@ -24,7 +24,7 @@
  * @ingroup views_templates
  */
 ?>
-      <table width="570" border="0" cellpadding="0" cellspacing="18" class="vb-container fullpad" bgcolor="#ffffff" style="border-collapse: separate; border-spacing: 18px; padding-left: 0; padding-right: 0; width: 100%; max-width: 570px; background-color: #ffffff;">
+      <table width="570" border="0" cellpadding="0" cellspacing="18" class="vb-container fullwidth" bgcolor="#ffffff" style="border-collapse: separate; border-spacing: 18px; padding-left: 0; padding-right: 0; width: 100%; max-width: 570px; background-color: #ffffff;">
         <tbody><tr>
           <td width="100%" valign="top" align="left" class="links-color">
 	      <img border="0" hspace="0" vspace="0" width="534" class="mobile-full" alt="" style="border: 0px; display: block; vertical-align: top; max-width: 534px; width: 100%; height: auto;" src="<?php print $fields['mosaico_image']->content; ?>">

@@ -47,7 +47,7 @@ function views_civimail_help($path, $arg) {
  * views_view_civimail, used by the style plugin
  */
 function views_civimail_theme() {
-  return [
+  $themes = [
  /*   'views_container_civimail' => [
       'template' => 'views-container-civimail',
       'base hook' => 'container',
@@ -65,16 +65,15 @@ function views_civimail_theme() {
     'views_view_fields_civimail' => [
       'template' => 'views-view-fields-civimail',
       'base hook' => 'views_view_fields',
-    ],
-    'views_view_fields_civimail_sidearticle' => [
-      'template' => 'views-view-fields-civimail-sidearticle',
-      'base hook' => 'views_view_fields',
-    ],
-    'views_view_fields_civimail_singlearticle' => [
-      'template' => 'views-view-fields-civimail-singlearticle',
-      'base hook' => 'views_view_fields',
-    ],
+    ]
   ];
+  foreach(['sidearticle','singlearticle','sidelist','imagearticle'] as $flavour) {
+    $themes['views_view_fields_civimail_'.$flavour] = [
+      'template' => 'views-view-fields-civimail-'.$flavour,
+      'base hook' => 'views_view_fields',
+    ];
+  };
+  return $themes;
 }
 
 /**
@@ -94,7 +93,7 @@ function views_civimail_preprocess_views_view_fields(&$variables) {
     $options = $style->options;
     $mosaico_block = $options['mosaico_block'];
     if ($mosaico_block) {
-      foreach(['mosaico_title','mosaico_image','mosaico_longText','mosaico_link'] as $key) {
+      foreach(['mosaico_title','mosaico_image','mosaico_longText','mosaico_link','mosaico_linkText'] as $key) {
         $value = $options[$key];
         if ($value && !empty($variables['fields'][$value])) {
           $variables['fields'][strtolower($key)] = $variables['fields'][$value];
@@ -107,6 +106,12 @@ function views_civimail_preprocess_views_view_fields(&$variables) {
         break;
       case 'singleArticleBlock':
         $variables['theme_hook_suggestions'][] = 'views_view_fields_civimail_singlearticle';
+        break;
+      case 'sideListBlock':
+        $variables['theme_hook_suggestions'][] = 'views_view_fields_civimail_sidelist';
+        break;
+      case 'imageArticleBlock':
+        $variables['theme_hook_suggestions'][] = 'views_view_fields_civimail_imagearticle';
         break;
       default: 
         $variables['theme_hook_suggestions'][] = 'views_view_fields_civimail';

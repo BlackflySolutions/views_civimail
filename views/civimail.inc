@@ -12,8 +12,8 @@
  */
 class views_plugin_style_civimail extends views_plugin_style {
 
-  protected $mosaico_blocks = ['' => 'None', 'sideArticleBlock' => 'Side Article Block','singleArticleBlock' => 'Single Article Block'];
-  protected $mosaico_fields = ['image' => 'Image', 'title' => 'Title', 'longText' => 'Body', 'link' => 'Link'];
+  protected $mosaico_blocks = ['' => 'None', 'sideArticleBlock' => 'Side Article Block','singleArticleBlock' => 'Single Article Block', 'sideListBlock' => 'Side List Block', 'imageArticleBlock' => 'Image Article Block'];
+  protected $mosaico_fields = ['image' => 'Image', 'title' => 'Title', 'longText' => 'Body', 'link' => 'Link', 'linkText' => 'Link text'];
 
   /**
    * Set default options.

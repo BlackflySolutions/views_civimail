@@ -24,51 +24,47 @@
  * @ingroup views_templates
  */
 ?>
-  <!-- sideArticleBlock, stripped  -->
-        <table width="534" border="0" cellpadding="0" cellspacing="0" class="vb-row fullwidth" bgcolor="#ffffff" 
-          style="border-collapse: collapse; width: 100%; max-width: 534px; background-color: #ffffff;">
+  <!-- imageArticleBlock, stripped  -->
+        <table width="534" border="0" cellpadding="0" cellspacing="0" class="vb-container fullwidth" bgcolor="#39b54a" 
+          style="border-collapse: collapse; width: 100%; max-width: 534px; background-color: #39b54a;">
           <tr>
             <td align="center" class="mobile-row" valign="top" style="font-size: 0;">
 
 <!--[if (gte mso 9)|(lte ie 8)]><table align="center" border="0" cellspacing="0" cellpadding="0" width="534"><tr><![endif]-->
 
-<!--[if (gte mso 9)|(lte ie 8)]><td align="left" valign="top" width="166"><![endif]--> 
-<div class="mobile-full" style="display: inline-block; max-width: 166px; vertical-align: top; width: 100%;"> 
+<!--[if (gte mso 9)|(lte ie 8)]><td align="left" valign="top" width="267"><![endif]--> 
+<div class="mobile-full" style="display: inline-block; max-width: 267px; vertical-align: top; width: 100%;"> 
 
-                  <table class="vb-content" border="0" cellspacing="9" cellpadding="0" width="166" align="left" style="border-collapse: separate; width: 100%;">
+                  <table class="vb-content" border="0" cellspacing="0" cellpadding="0" width="267" align="left" style="border-collapse: separate; width: 100%;">
                     <tbody><tr>
                       <td width="100%" valign="top" align="left" class="links-color">
-                        
-		      <img border="0" hspace="0" vspace="0" width="166" class="mobile-full" alt="" style="border: 0px; display: block; vertical-align: top; width: 100%; height: auto; max-width: 166px;" src="<?php print $fields['mosaico_image']->content; ?>">
-                        
+		      <img border="0" hspace="0" vspace="0" width="267" class="mobile-full" alt="" style="border: 0px; display: block; vertical-align: top; width: 100%; height: auto; max-width: 266px;" src="<?php print $fields['mosaico_image']->content; ?>" />
                       </td>
                     </tr>
                   </tbody></table>
 
 </div><!--[if (gte mso 9)|(lte ie 8)]></td>
 <![endif]--><!--[if (gte mso 9)|(lte ie 8)]>
-<td align="left" valign="top" width="350">
-<![endif]--><div class="mobile-full" style="display: inline-block; max-width: 350px; vertical-align: top; width: 100%;"> 
+<td align="left" valign="top" width="267">
+<![endif]--><div class="mobile-full" style="display: inline-block; max-width: 267px; vertical-align: top; width: 100%;"> 
 
-                  <table class="vb-content" border="0" cellspacing="9" cellpadding="0" width="350" align="left" style="border-collapse: separate; width: 100%;">
+                  <table class="vb-container" border="0" cellspacing="0" cellpadding="4" width="267" align="left" style="padding-top: 14px; background-color: #39b54a; border-collapse: separate; width: 100%;">
                     <tbody><tr>
-                      <td style="font-size: 18px; font-family: Arial, Helvetica, sans-serif; color: #3f3f3f; text-align: left;">
-                        <span style="color: #3f3f3f;">
+                      <td style="font-weight: bold; font-size: 14px; font-family: Arial, Helvetica, sans-serif; color: #000000; text-align: left;">
 <?php print $fields['mosaico_title']->content; ?>
-                        </span>
                       </td>
                     </tr>
                     <tr>
-                      <td align="left" class="long-text links-color" style="text-align: left; font-size: 13px; font-family: Arial, Helvetica, sans-serif; color: #3f3f3f;">
+                      <td align="left" class="long-text links-color" style="text-align: left; font-weight: bold; font-size: 18px; font-family: Arial, Helvetica, sans-serif; color: #ffffff;">
 <?php print $fields['mosaico_longtext']->content; ?>
                       </td>
                     </tr>
                     <tr>
                       <td valign="top">
-                        <table cellpadding="0" border="0" align="left" cellspacing="0" class="mobile-full" style="padding-top: 4px;">
+                        <table cellpadding="0" border="0" align="left" cellspacing="0" class="mobile-full" style="padding-top: 4px; padding-bottom: 16px;">
                           <tbody><tr>
-                            <td width="auto" valign="middle" bgcolor="#bfbfbf" align="center" height="26" style="font-size: 13px; font-family: Arial, Helvetica, sans-serif; text-align: center; color: #3f3f3f; font-weight: normal; padding-left: 18px; padding-right: 18px; background-color: #bfbfbf; border-radius: 4px;">
-<a style="text-decoration: none; color: #3f3f3f; font-weight: normal;" target="_new" href="<?php print $fields['mosaico_link']->content; ?>"><?php print $fields['mosaico_linktext']->content; ?></a>
+                            <td width="auto" valign="middle" bgcolor="#bfbfbf" align="center" height="26" style="font-size: 14px; font-family: Arial, Helvetica, sans-serif; text-align: center; color: #ffffff; font-weight: normal; padding-left: 14px; padding-right: 14px; background-color: #000000; border-radius: 4px;">
+<a style="text-decoration: none; color: #ffffff; font-weight: normal;" target="_new" href="<?php print $fields['mosaico_link']->content; ?>"><?php print $fields['mosaico_linktext']->content; ?></a>
                             </td>
                           </tr>
                         </tbody></table>
@@ -82,5 +78,5 @@
       </td>
     </tr>
   </table>
-  <!-- /sideArticleBlock -->
+  <!-- /imageArticleBlock -->
 
