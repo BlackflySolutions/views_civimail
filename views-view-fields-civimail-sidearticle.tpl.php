@@ -67,8 +67,8 @@
                       <td valign="top">
                         <table cellpadding="0" border="0" align="left" cellspacing="0" class="mobile-full" style="padding-top: 4px;">
                           <tbody><tr>
-                            <td width="auto" valign="middle" bgcolor="#bfbfbf" align="center" height="26" style="font-size: 13px; font-family: Arial, Helvetica, sans-serif; text-align: center; color: #3f3f3f; font-weight: normal; padding-left: 18px; padding-right: 18px; background-color: #bfbfbf; border-radius: 4px;">
-<a style="text-decoration: none; color: #3f3f3f; font-weight: normal;" target="_new" href="<?php print $fields['mosaico_link']->content; ?>"><?php print $fields['mosaico_linktext']->content; ?></a>
+                            <td width="auto" valign="middle" bgcolor="#6f52f6" align="center" height="26" style="font-size: 13px; font-family: Arial, Helvetica, sans-serif; text-align: center; color: #ffffff; font-weight: normal; padding-left: 18px; padding-right: 18px; background-color: #6f52f6; border-radius: 4px;">
+<a style="text-decoration: none; color: #ffffff; font-weight: normal;" target="_new" href="<?php print $fields['mosaico_link']->content; ?>"><?php print $fields['mosaico_linktext']->content; ?></a>
                             </td>
                           </tr>
                         </tbody></table>
